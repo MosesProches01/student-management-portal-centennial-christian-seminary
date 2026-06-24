@@ -1,0 +1,307 @@
+{% load static %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% trans 'Sign In' %} — CCS Student Management System</title>
+    <link rel="shortcut icon" href="{% static 'img/favicon.png' %}" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --ccs-primary: #5b2475;
+            --ccs-secondary: #672b85;
+            --ccs-dark: #2f153f;
+            --ccs-accent: #8ad3e0;
+            --ccs-light: #f3f0f5;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            background: linear-gradient(135deg, var(--ccs-dark) 0%, var(--ccs-primary) 50%, var(--ccs-secondary) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: -30%;
+            right: -15%;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: rgba(138, 211, 224, 0.06);
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            bottom: -20%;
+            left: -10%;
+            width: 350px;
+            height: 350px;
+            border-radius: 50%;
+            background: rgba(138, 211, 224, 0.04);
+        }
+
+        .login-split {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-brand {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem;
+            text-align: center;
+            color: #fff;
+        }
+
+        .login-brand img {
+            width: 100px;
+            margin-bottom: 1.5rem;
+        }
+
+        .login-brand h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.8rem;
+            line-height: 1.2;
+        }
+
+        .login-brand .motto {
+            color: var(--ccs-accent);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .login-brand p {
+            font-size: 1rem;
+            color: rgba(255,255,255,0.7);
+            max-width: 400px;
+            line-height: 1.7;
+        }
+
+        .login-form-side {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .login-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+        }
+
+        .login-card .card-header-text {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-card .card-header-text h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--ccs-dark);
+            margin-bottom: 0.3rem;
+        }
+
+        .login-card .card-header-text p {
+            color: #999;
+            font-size: 0.85rem;
+        }
+
+        .form-group { margin-bottom: 1.2rem; }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group label i {
+            color: var(--ccs-primary);
+            margin-right: 6px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e8e8e8;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all 0.3s;
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: var(--ccs-primary);
+            box-shadow: 0 0 0 3px rgba(91, 36, 117, 0.1);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 0.85rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            background: linear-gradient(135deg, var(--ccs-primary), var(--ccs-secondary));
+            color: #fff;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 0.5rem;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(91, 36, 117, 0.3);
+        }
+
+        .btn-login.disabled {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .error-msg {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            padding: 0.6rem 1rem;
+            background: #fef0f0;
+            border-radius: 8px;
+            border: 1px solid #fdd;
+        }
+
+        .login-bottom {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid #eee;
+        }
+
+        .login-bottom a {
+            color: var(--ccs-primary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .login-bottom a:hover {
+            text-decoration: underline;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 0.85rem;
+            margin-top: 2rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover { color: var(--ccs-accent); }
+
+        @media (max-width: 768px) {
+            .login-split { flex-direction: column; }
+            .login-brand { padding: 3rem 2rem 1rem; flex: 0; }
+            .login-brand h1 { font-size: 1.5rem; }
+            .login-brand p { display: none; }
+            .login-form-side { flex: 1; padding: 1rem; align-items: flex-start; padding-top: 1rem; }
+            .login-card { padding: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-split">
+        <div class="login-brand">
+            <img src="{% static 'img/ccs-logo.png' %}" alt="CCS Logo" onerror="this.style.display='none'">
+            <h1>Centennial Christian<br>Seminary</h1>
+            <div class="motto">A New Generation Leader</div>
+            <p>
+                High quality education in a nurturing environment.
+                Student Management System for students, teachers, and parents.
+            </p>
+            <a href="{% url 'landing' %}" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back to homepage
+            </a>
+        </div>
+
+        <div class="login-form-side">
+            <div class="login-card">
+                <div class="card-header-text">
+                    <h2>{% trans 'Welcome Back' %}</h2>
+                    <p>{% trans 'Sign in to your CCS account' %}</p>
+                </div>
+
+                <form action="" method="POST" id="login-form">
+                    {% csrf_token %}
+                    {% if form.errors %}
+                    <div class="error-msg">
+                        <i class="fas fa-exclamation-circle"></i> {% trans 'Invalid ID Number or Password.' %}
+                    </div>
+                    {% endif %}
+
+                    <div class="form-group">
+                        <label for="username_id"><i class="fas fa-id-card"></i> {% trans 'ID Number' %}</label>
+                        <input type="text" name="username" id="username_id" class="form-control" placeholder="{% trans 'Enter your ID number' %}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password_id"><i class="fas fa-lock"></i> {% trans 'Password' %}</label>
+                        <input type="password" name="password" id="password_id" class="form-control" placeholder="{% trans 'Enter your password' %}" required>
+                    </div>
+
+                    <button type="submit" class="btn-login" id="login-btn">
+                        <i class="fas fa-sign-in-alt"></i> {% trans 'SIGN IN' %}
+                    </button>
+                </form>
+
+                <div class="login-bottom">
+                    <a href="{% url 'password_reset' %}">{% trans 'Forgot your password?' %}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script>
+        $('#login-form').submit(function () {
+            $('#login-btn').addClass('disabled');
+            $('#login-btn').html('<i class="fas fa-spinner fa-spin"></i> Signing you in...');
+        });
+    </script>
+</body>
+</html>
